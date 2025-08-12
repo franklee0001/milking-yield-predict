@@ -15,7 +15,7 @@ st.markdown(
     /* 전체 글씨 색상과 굵기 */
     .stApp {{
         background-image:
-            linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+            linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.42)),
             url("{BG_URL}?t={cache_buster}");
         background-size: cover;
         background-position: right center;
