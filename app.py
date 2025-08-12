@@ -1,6 +1,7 @@
 import streamlit as st
 import joblib
 import pandas as pd
+import time
 
 st.set_page_config(page_title="착유량 예측기", page_icon="🐄")
 
