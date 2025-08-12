@@ -17,7 +17,7 @@ st.markdown(
     <style>
     .stApp {{
       background-image:
-        linear-gradient(rgba(0,0,0,0.16), rgba(0,0,0,0.16)),
+        linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.18)),
         url("{BG_URL}?t={cache_buster}");
       background-size: cover;
       background-position: right center;
@@ -25,42 +25,27 @@ st.markdown(
       background-color: #0f1116;
     }}
 
-    /* 제목/본문 전반: 더 밝고 더 굵게 + 강한 그림자 */
-    h1, h2, h3 {{
-      color:#ffffff !important;
+    /* 제목/본문/라벨 */
+    h1, h2, h3 {{ color:#fff !important; font-weight:900 !important; text-shadow:0 2px 3px rgba(0,0,0,.45); }}
+    .stMarkdown p, .stCaption, .stText {{ color:#f5f7fa !important; font-weight:700 !important; text-shadow:0 1px 2px rgba(0,0,0,.35); }}
+    label {{ color:#ffffff !important; font-weight:800 !important; text-shadow:0 1px 2px rgba(0,0,0,.35); }}
+
+    /* 입력박스 안 글자 */
+    .stNumberInput input {{ color:#fff !important; font-weight:800 !important; }}
+
+    /* metric 숫자/라벨 강조 */
+    [data-testid="stMetricValue"] {{
+      color: #ffeb3b !important;   /* 노란색 */
+      font-weight: 1000 !important;
+      font-size: 2.6rem !important;
+      text-shadow: 0 2px 4px rgba(0,0,0,.55);
+    }}
+    [data-testid="stMetricLabel"] {{
+      color: #ffffff !important;
       font-weight: 900 !important;
-      text-shadow:
-        0 2px 3px rgba(0,0,0,.45),
-        0 0 14px rgba(0,0,0,.25);
+      font-size: 1.3rem !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,.4);
     }}
-    .stMarkdown p, .stCaption, .stText {{
-      color:#f8fafc !important;           /* 아주 밝은 흰 */
-      font-weight: 700 !important;
-      text-shadow: 0 1px 2px rgba(0,0,0,.35);
-    }}
-    label {{
-      color:#ffffff !important;
-      font-weight: 800 !important;
-      text-shadow: 0 1px 2px rgba(0,0,0,.35);
-    }}
-
-    /* 입력 위젯 안 글자/placeholder도 또렷하게 */
-    .stNumberInput input,
-    .stTextInput input,
-    .stSelectbox div[data-baseweb="select"] input {{
-      color:#ffffff !important;
-      font-weight: 800 !important;
-      text-shadow: 0 1px 2px rgba(0,0,0,.35);
-    }}
-
-    /* 버튼도 대비 높이기 */
-    button[kind="primary"] {{
-      font-weight: 800 !important;
-      border-radius: 10px !important;
-      box-shadow: 0 6px 18px rgba(0,0,0,.25);
-    }}
-
-    /* 메트릭 카드: 어두운 유리 → 노란 숫자가 튀도록 */
     .metric-card {{
       display:inline-block;
       background: rgba(0,0,0,0.55);
@@ -72,37 +57,24 @@ st.markdown(
       margin-top: 10px;
       margin-bottom: 12px;
     }}
-    /* metric 카드(예측값) */
-    [data-testid="stMetricValue"] {
-      color: #ffeb3b !important;  /* 노란색 강조 */
-      font-weight: 1000 !important;
-      font-size: 2.6rem !important;  /* 기존보다 크게 */
-      text-shadow: 0 2px 4px rgba(0,0,0,.55);
-    }
-    [data-testid="stMetricLabel"] {
-      color: #ffffff !important;
-      font-weight: 900 !important;
-      font-size: 1.3rem !important;
-      opacity: 1;
-      text-shadow: 0 1px 3px rgba(0,0,0,.4);
-    }
-    /* 우유 등급 배지 */
-    .badge {
+
+    /* 우유 등급 배지(프리미엄/일반/저지방/무지방) */
+    .badge {{
       display:inline-block;
-      padding: 8px 14px;  /* 더 크게 */
+      padding: 8px 14px;
       border-radius: 999px;
       font-weight: 1000;
       font-size: 1.2rem;
-      letter-spacing: 0.5px;
+      letter-spacing: .5px;
       color:#0f1116;
-      background: #ffd54f; /* 프리미엄(금색) */
+      background: #ffd54f;           /* 프리미엄 기본색 */
       border: 2px solid rgba(255,255,255,0.3);
       margin-left: 8px;
       text-shadow: 0 1px 2px rgba(255,255,255,.3);
-    }
-    .badge.lowfat { background:#90caf9; }
-    .badge.nofat  { background:#a5d6a7; }
-    .badge.normal { background:#e0e0e0; }
+    }}
+    .badge.lowfat {{ background:#90caf9; }}
+    .badge.nofat  {{ background:#a5d6a7; }}
+    .badge.normal {{ background:#e0e0e0; }}
     </style>
     """,
     unsafe_allow_html=True
