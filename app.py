@@ -72,27 +72,37 @@ st.markdown(
       margin-top: 10px;
       margin-bottom: 12px;
     }}
-    [data-testid="stMetricValue"] {{
-      color:#FFEB3B !important;           /* ▶ 노란색 강조 */
+    /* metric 카드(예측값) */
+    [data-testid="stMetricValue"] {
+      color: #ffeb3b !important;  /* 노란색 강조 */
       font-weight: 1000 !important;
-      font-size: 2.2rem !important;
-      letter-spacing: .3px;
-      text-shadow:
-        0 2px 3px rgba(0,0,0,.55),
-        0 0 18px rgba(0,0,0,.35);
-    }}
-    [data-testid="stMetricLabel"] {{
-      color:#ffffff !important;
+      font-size: 2.6rem !important;  /* 기존보다 크게 */
+      text-shadow: 0 2px 4px rgba(0,0,0,.55);
+    }
+    [data-testid="stMetricLabel"] {
+      color: #ffffff !important;
       font-weight: 900 !important;
-      opacity:.98;
-      text-shadow: 0 1px 2px rgba(0,0,0,.35);
-    }}
-
-    /* 등급 배지도 더 진하게 */
-    .badge {{ color:#0f1116; font-weight: 900; }}
-    .badge.lowfat {{ background:#90caf9; }}
-    .badge.nofat  {{ background:#a5d6a7; }}
-    .badge.normal {{ background:#e0e0e0; }}
+      font-size: 1.3rem !important;
+      opacity: 1;
+      text-shadow: 0 1px 3px rgba(0,0,0,.4);
+    }
+    /* 우유 등급 배지 */
+    .badge {
+      display:inline-block;
+      padding: 8px 14px;  /* 더 크게 */
+      border-radius: 999px;
+      font-weight: 1000;
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
+      color:#0f1116;
+      background: #ffd54f; /* 프리미엄(금색) */
+      border: 2px solid rgba(255,255,255,0.3);
+      margin-left: 8px;
+      text-shadow: 0 1px 2px rgba(255,255,255,.3);
+    }
+    .badge.lowfat { background:#90caf9; }
+    .badge.nofat  { background:#a5d6a7; }
+    .badge.normal { background:#e0e0e0; }
     </style>
     """,
     unsafe_allow_html=True
