@@ -5,18 +5,21 @@ import pandas as pd
 st.set_page_config(page_title="착유량 예측기", page_icon="🐄")
 
 # 🎨 페이지 배경 스타일 적용
+BG_URL = "https://raw.githubusercontent.com/franklee0001/milking-yield-predict/main/background.png"
+cache_buster = int(time.time() // 3600)  # 캐시 무효화(1시간 단위)
+
 st.markdown(
-    """
+    f"""
     <style>
-    .stApp {
-        background-image: url("background.png");           /* 배경 이미지 */
+    .stApp {{
+        background-image:
+            linear-gradient(rgba(0,0,0,0.20), rgba(0,0,0,0.20)),
+            url("{BG_URL}?t={cache_buster}");
         background-size: cover;
         background-position: right center;
         background-repeat: no-repeat;
-
-        background-color: rgba(0,0,0,0.18);                /* 어둡게 정도(0.15~0.25 조절) */
-        background-blend-mode: darken;                     /* 이미지 + 단색을 어둡게 섞음 */
-    }
+        background-color: #0f1116;
+    }}
     </style>
     """,
     unsafe_allow_html=True
