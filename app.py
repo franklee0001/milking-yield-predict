@@ -11,13 +11,13 @@ st.set_page_config(page_title="착유량 예측기", page_icon="🐄")
 BG_URL = "https://raw.githubusercontent.com/franklee0001/milking-yield-predict/main/background.png"
 cache_buster = int(time.time() // 3600)  # 1시간 단위 캐시 무효화
 
+#   
 st.markdown(
     f"""
     <style>
     .stApp {{
-      /* 배경: 살짝만 어둡게(0.18) */
       background-image:
-        linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.18)),
+        linear-gradient(rgba(0,0,0,0.16), rgba(0,0,0,0.16)),
         url("{BG_URL}?t={cache_buster}");
       background-size: cover;
       background-position: right center;
@@ -25,56 +25,79 @@ st.markdown(
       background-color: #0f1116;
     }}
 
-    /* 제목/본문/라벨 - 하얗고 굵게 + 얇은 그림자 */
-    h1, h2, h3 {{ color:#fff !important; font-weight:800 !important; text-shadow:0 1px 2px rgba(0,0,0,.28); }}
-    .stMarkdown p, .stCaption, .stText {{ color:#f5f7fa !important; font-weight:600 !important; }}
-    label {{ color:#ffffff !important; font-weight:700 !important; }}
+    /* 제목/본문 전반: 더 밝고 더 굵게 + 강한 그림자 */
+    h1, h2, h3 {{
+      color:#ffffff !important;
+      font-weight: 900 !important;
+      text-shadow:
+        0 2px 3px rgba(0,0,0,.45),
+        0 0 14px rgba(0,0,0,.25);
+    }}
+    .stMarkdown p, .stCaption, .stText {{
+      color:#f8fafc !important;           /* 아주 밝은 흰 */
+      font-weight: 700 !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    }}
+    label {{
+      color:#ffffff !important;
+      font-weight: 800 !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    }}
 
-    /* 입력박스 안 글자도 또렷하게 */
-    .stNumberInput input {{ color:#fff !important; font-weight:700 !important; }}
+    /* 입력 위젯 안 글자/placeholder도 또렷하게 */
+    .stNumberInput input,
+    .stTextInput input,
+    .stSelectbox div[data-baseweb="select"] input {{
+      color:#ffffff !important;
+      font-weight: 800 !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    }}
 
-    /* metric 카드(예측값) */
+    /* 버튼도 대비 높이기 */
+    button[kind="primary"] {{
+      font-weight: 800 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+    }}
+
+    /* 메트릭 카드: 어두운 유리 → 노란 숫자가 튀도록 */
     .metric-card {{
       display:inline-block;
-      background: rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.55);
       -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 14px;
-      padding: 10px 14px;
-      margin-top: 8px;
-      margin-bottom: 10px;
+      padding: 12px 16px;
+      margin-top: 10px;
+      margin-bottom: 12px;
     }}
     [data-testid="stMetricValue"] {{
-      color:#ffffff !important;
-      font-weight:900 !important;
-      font-size: 2rem !important;
-      text-shadow: 0 1px 2px rgba(0,0,0,.35);
+      color:#FFEB3B !important;           /* ▶ 노란색 강조 */
+      font-weight: 1000 !important;
+      font-size: 2.2rem !important;
+      letter-spacing: .3px;
+      text-shadow:
+        0 2px 3px rgba(0,0,0,.55),
+        0 0 18px rgba(0,0,0,.35);
     }}
     [data-testid="stMetricLabel"] {{
       color:#ffffff !important;
-      font-weight:800 !important;
-      opacity:.95;
+      font-weight: 900 !important;
+      opacity:.98;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
     }}
 
-    /* 우유 등급 배지 */
-    .badge {{
-      display:inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-weight: 800;
-      color:#0f1116;
-      background: #ffd54f; /* 기본: 프리미엄(금색 느낌) */
-      border: 1px solid rgba(255,255,255,0.18);
-      margin-left: 6px;
-    }}
-    .badge.lowfat {{ background:#90caf9; }}   /* 저지방 */
-    .badge.nofat  {{ background:#a5d6a7; }}   /* 무지방 */
-    .badge.normal {{ background:#e0e0e0; }}   /* 일반 */
+    /* 등급 배지도 더 진하게 */
+    .badge {{ color:#0f1116; font-weight: 900; }}
+    .badge.lowfat {{ background:#90caf9; }}
+    .badge.nofat  {{ background:#a5d6a7; }}
+    .badge.normal {{ background:#e0e0e0; }}
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 # =========================
 # 모델 로드
