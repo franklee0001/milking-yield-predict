@@ -4,6 +4,25 @@ import pandas as pd
 
 st.set_page_config(page_title="착유량 예측기", page_icon="🐄")
 
+# 🎨 페이지 배경 스타일 적용
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url("background.png");           /* 배경 이미지 */
+        background-size: cover;
+        background-position: right center;
+        background-repeat: no-repeat;
+
+        background-color: rgba(0,0,0,0.18);                /* 어둡게 정도(0.15~0.25 조절) */
+        background-blend-mode: darken;                     /* 이미지 + 단색을 어둡게 섞음 */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 @st.cache_resource
 def load_bundle():
     bundle = joblib.load("final_cb.pkl")   # 노트북에서 저장한 모델
