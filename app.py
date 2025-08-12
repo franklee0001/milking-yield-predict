@@ -12,24 +12,42 @@ cache_buster = int(time.time() // 3600)  # 캐시 무효화(1시간 단위)
 st.markdown(
     f"""
     <style>
+    /* 전체 글씨 색상과 굵기 */
     .stApp {{
         background-image:
-            linear-gradient(rgba(0,0,0,0.20), rgba(0,0,0,0.20)),
+            linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
             url("{BG_URL}?t={cache_buster}");
         background-size: cover;
         background-position: right center;
         background-repeat: no-repeat;
         background-color: #0f1116;
+        color: white !important;
+        font-weight: 600 !important;
+    }}
+
+    /* metric 카드 글씨 굵게 & 배경 반투명 */
+    [data-testid="stMetricValue"] {{
+        color: #ffeb3b !important;  /* 노란색 강조 */
+        font-size: 2rem !important;
+        font-weight: bold !important;
+    }}
+    [data-testid="stMetricLabel"] {{
+        color: white !important;
+        font-weight: bold !important;
+    }}
+    .stMetric {{
+        background-color: rgba(0,0,0,0.5);
+        padding: 10px;
+        border-radius: 10px;
     }}
     </style>
     """,
     unsafe_allow_html=True
 )
 
-
 @st.cache_resource
 def load_bundle():
-    bundle = joblib.load("final_cb.pkl")   # 노트북에서 저장한 모델
+    bundle = joblib.load("final_cb.pkl")
     return bundle["model"], bundle["features"]
 
 model, FEATURES = load_bundle()
