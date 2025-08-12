@@ -5,55 +5,112 @@ import time
 
 st.set_page_config(page_title="착유량 예측기", page_icon="🐄")
 
-# 🎨 페이지 배경 스타일 적용
+# =========================
+# 배경 이미지 (깃허브 raw URL) + 가독성 스타일
+# =========================
 BG_URL = "https://raw.githubusercontent.com/franklee0001/milking-yield-predict/main/background.png"
-cache_buster = int(time.time() // 3600)  # 캐시 무효화(1시간 단위)
+cache_buster = int(time.time() // 3600)  # 1시간 단위 캐시 무효화
 
 st.markdown(
     f"""
     <style>
-    /* 전체 글씨 색상과 굵기 */
     .stApp {{
-        background-image:
-            linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.42)),
-            url("{BG_URL}?t={cache_buster}");
-        background-size: cover;
-        background-position: right center;
-        background-repeat: no-repeat;
-        background-color: #0f1116;
-        color: white !important;
-        font-weight: 600 !important;
+      /* 배경: 살짝만 어둡게(0.18) */
+      background-image:
+        linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.18)),
+        url("{BG_URL}?t={cache_buster}");
+      background-size: cover;
+      background-position: right center;
+      background-repeat: no-repeat;
+      background-color: #0f1116;
     }}
 
-    /* metric 카드 글씨 굵게 & 배경 반투명 */
+    /* 제목/본문/라벨 - 하얗고 굵게 + 얇은 그림자 */
+    h1, h2, h3 {{ color:#fff !important; font-weight:800 !important; text-shadow:0 1px 2px rgba(0,0,0,.28); }}
+    .stMarkdown p, .stCaption, .stText {{ color:#f5f7fa !important; font-weight:600 !important; }}
+    label {{ color:#ffffff !important; font-weight:700 !important; }}
+
+    /* 입력박스 안 글자도 또렷하게 */
+    .stNumberInput input {{ color:#fff !important; font-weight:700 !important; }}
+
+    /* metric 카드(예측값) */
+    .metric-card {{
+      display:inline-block;
+      background: rgba(255,255,255,0.16);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }}
     [data-testid="stMetricValue"] {{
-        color: #ffeb3b !important;  /* 노란색 강조 */
-        font-size: 2rem !important;
-        font-weight: bold !important;
+      color:#ffffff !important;
+      font-weight:900 !important;
+      font-size: 2rem !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
     }}
     [data-testid="stMetricLabel"] {{
-        color: white !important;
-        font-weight: bold !important;
+      color:#ffffff !important;
+      font-weight:800 !important;
+      opacity:.95;
     }}
-    .stMetric {{
-        background-color: rgba(0,0,0,0.5);
-        padding: 10px;
-        border-radius: 10px;
+
+    /* 우유 등급 배지 */
+    .badge {{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      color:#0f1116;
+      background: #ffd54f; /* 기본: 프리미엄(금색 느낌) */
+      border: 1px solid rgba(255,255,255,0.18);
+      margin-left: 6px;
     }}
+    .badge.lowfat {{ background:#90caf9; }}   /* 저지방 */
+    .badge.nofat  {{ background:#a5d6a7; }}   /* 무지방 */
+    .badge.normal {{ background:#e0e0e0; }}   /* 일반 */
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# =========================
+# 모델 로드
+# =========================
 @st.cache_resource
 def load_bundle():
-    bundle = joblib.load("final_cb.pkl")
+    bundle = joblib.load("final_cb.pkl")   # 모델 번들: {"model": ..., "features": [...]}
     return bundle["model"], bundle["features"]
 
 model, FEATURES = load_bundle()
 
+# =========================
+# 우유 등급 분류 함수
+# =========================
+def classify_milk(fat: float, protein: float):
+    """
+    Tableau 로직:
+    IF fat>=3.8 AND protein>=3.2 -> 프리미엄
+    ELSEIF fat<=2.0 AND fat>0.5  -> 저지방
+    ELSEIF fat<=0.5              -> 무지방
+    ELSE                         -> 일반
+    """
+    if fat >= 3.8 and protein >= 3.2:
+        return "프리미엄 우유", "premium"
+    elif fat <= 2.0 and fat > 0.5:
+        return "저지방 우유", "lowfat"
+    elif fat <= 0.5:
+        return "무지방 우유", "nofat"
+    else:
+        return "일반 우유", "normal"
+
+# =========================
+# UI
+# =========================
 st.title("🐄 착유량 예측기 (CatBoost)")
-st.caption("학습된 모델에 X값을 입력해 착유량(L)을 예측합니다.")
+st.caption("학습된 모델에 X값을 입력해 착유량(L)을 예측하고, 유지방/유단백에 따른 우유 등급을 안내합니다.")
 
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -69,11 +126,15 @@ with col3:
     착유소요시간 = st.number_input("착유소요시간(분)", value=7.5, step=0.1)
     pfr_auto = st.toggle("PFR 자동 계산 (유단백/유지방)", value=True)
 
+# PFR 자동/수동
 if pfr_auto:
     PFR = (유단백 / 유지방) if 유지방 not in (0, None) and 유지방 != 0 else 0.0
 else:
     PFR = st.number_input("PFR (유단백/유지방)", value=0.85, step=0.01)
 
+# =========================
+# 예측
+# =========================
 if st.button("예측하기"):
     row_full = {
         "온도": 온도,
@@ -86,10 +147,34 @@ if st.button("예측하기"):
         "PFR": PFR,
         "착유소요시간(분)": 착유소요시간,
     }
+    # 학습 당시 FEATURES 순서에 맞추기
     row = {k: row_full[k] for k in FEATURES if k in row_full}
     X = pd.DataFrame([row], columns=FEATURES).astype(float)
 
+    # 모델 예측
     y_pred = model.predict(X)
-    st.metric("예측된 착유량 (L)", f"{float(y_pred[0]):.2f}")
+    y = float(y_pred[0])
+
+    # 예측값 카드
+    st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+    st.metric("예측된 착유량 (L)", f"{y:.2f}")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # 우유 등급 표시
+    grade_text, tag = classify_milk(유지방, 유단백)
+    # 등급 배지 색상 클래스 선택
+    cls = {
+        "premium": "",
+        "lowfat": "lowfat",
+        "nofat": "nofat",
+        "normal": "normal"
+    }[tag]
+    st.markdown(
+        f"<div style='margin-top:6px;font-weight:800;color:#fff;'>우유 등급: "
+        f"<span class='badge {cls}'>{grade_text}</span></div>",
+        unsafe_allow_html=True
+    )
+
+    # 입력값 확인
     with st.expander("입력값 확인"):
         st.write(X)
